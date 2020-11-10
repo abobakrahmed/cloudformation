@@ -1,0 +1,164 @@
+Resources:
+  ENI:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: subnet-141f437d
+      Tags:
+        - Key: Name
+          Value: NewENI
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 34471428-cee8-423d-b67c-98effe523804
+
+  EC2Test:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: ami-0a13d44dccf1f5cf6
+      InstanceType: t2.micro
+      AvailabilityZone: eu-west-2c
+      KeyName: FirstLab
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          SubnetId: subnet-141f437d
+          DeviceIndex: '0'
+      Tags:
+        - Key: Name
+          Value: MyFirstLab-ByCloudFormation
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 7595aa29-b261-4db7-9989-24e339585424
+  ENIAtt:
+    Type: 'AWS::EC2::NetworkInterfaceAttachment'
+    Properties:
+      InstanceId: !Ref EC2Test
+      NetworkInterfaceId: !Ref ENI
+      DeviceIndex: '1'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f5803434-c764-4e15-a4f9-f9b011c5dc97
+  IPAddress:
+    Type: 'AWS::EC2::EIP'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 55f6370c-8608-45f8-802d-fc3ebb2838b5
+  IPAssoc:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      EIP: !Ref IPAddress
+      InstanceId: !Ref EC2Test
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 999c698f-3c0d-400d-a501-a6765385d253
+  EC2SGTest:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+      VpcId: vpc-68e9a200
+    DependsOn: EC2Test
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: cb91aea7-e325-47fe-b13b-a7baeff7e051
+  EC2VolTest:
+    Type: 'AWS::EC2::Volume'
+    Properties:
+      Size: 20
+      VolumeType: gp2
+      AvailabilityZone: !GetAtt EC2Test.AvailabilityZone
+      Tags:
+        - Key: ColudForma-volume1
+          Value: CreateEC2Volume
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 17fa479d-f7f6-46b7-b113-c2e7a750a6fa
+  EC2VolAttache:
+    Type: 'AWS::EC2::VolumeAttachment'
+    Properties:
+      VolumeId: !Ref EC2VolTest
+      InstanceId: !Ref EC2Test
+      Device: /dev/sdh
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f82b93ec-47cd-4908-b886-89b8c17dbbf4
+Metadata:
+  'AWS::CloudFormation::Designer':
+    55f6370c-8608-45f8-802d-fc3ebb2838b5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 90
+      z: 1
+      embeds: []
+      dependson:
+        - 9d4e7150-1807-4f50-8f26-7a5e22cd113d
+    cb91aea7-e325-47fe-b13b-a7baeff7e051:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 90
+      z: 1
+      embeds: []
+      dependson:
+        - 7595aa29-b261-4db7-9989-24e339585424
+    7595aa29-b261-4db7-9989-24e339585424:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 300
+        'y': 150
+      z: 1
+      embeds: []
+      dependson:
+        - 55f6370c-8608-45f8-802d-fc3ebb2838b5
+        - 17fa479d-f7f6-46b7-b113-c2e7a750a6fa
+    17fa479d-f7f6-46b7-b113-c2e7a750a6fa:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 120
+        'y': 240
+      z: 1
+      embeds: []
+      dependson:
+        - 7595aa29-b261-4db7-9989-24e339585424
+    f82b93ec-47cd-4908-b886-89b8c17dbbf4:
+      source:
+        id: 17fa479d-f7f6-46b7-b113-c2e7a750a6fa
+      target:
+        id: 7595aa29-b261-4db7-9989-24e339585424
+      z: 1
+    f9457899-fd95-452f-ad36-f6e29f360a88:
+      source:
+        id: 55f6370c-8608-45f8-802d-fc3ebb2838b5
+      target:
+        id: 7595aa29-b261-4db7-9989-24e339585424
+      z: 2
+    999c698f-3c0d-400d-a501-a6765385d253:
+      source:
+        id: 55f6370c-8608-45f8-802d-fc3ebb2838b5
+      target:
+        id: 7595aa29-b261-4db7-9989-24e339585424
+      z: 1
+    34471428-cee8-423d-b67c-98effe523804:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 390
+        'y': 90
+      z: 1
+      embeds: []
+    f5803434-c764-4e15-a4f9-f9b011c5dc97:
+      source:
+        id: 34471428-cee8-423d-b67c-98effe523804
+      target:
+        id: 7595aa29-b261-4db7-9989-24e339585424

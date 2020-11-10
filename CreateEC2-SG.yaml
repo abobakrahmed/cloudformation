@@ -1,0 +1,55 @@
+Resources:
+  EC2Test:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: ami-0a13d44dccf1f5cf6
+      InstanceType: t2.micro
+      AvailabilityZone: eu-west-2c
+      KeyName: FirstLab
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          SubnetId: subnet-141f437d
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref EC2SGTest
+      Tags:
+        - Key: Name
+          Value: MyFirstLab-ByCloudFormation
+
+  IPAddress:
+    Type: 'AWS::EC2::EIP'
+
+  IPAssoc:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      EIP: !Ref IPAddress
+      InstanceId: !Ref EC2Test
+
+  EC2SGTest:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: vpc-68e9a200
+
+  EC2VolTest:
+    Type: 'AWS::EC2::Volume'
+    Properties:
+      Size: 20
+      VolumeType: gp2
+      AvailabilityZone: !GetAtt EC2Test.AvailabilityZone
+      Tags:
+        - Key: ColudForma-volume1
+          Value: CreateEC2Volume
+
+  EC2VolAttache:
+    Type: 'AWS::EC2::VolumeAttachment'
+    Properties:
+      VolumeId: !Ref EC2VolTest
+      InstanceId: !Ref EC2Test
+      Device: /dev/sdh
+  
